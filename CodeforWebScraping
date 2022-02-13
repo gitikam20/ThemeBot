@@ -1,0 +1,89 @@
+!pip install discord.py
+import discord
+!pip install nest_asyncio
+import nest_asyncio
+
+!pip install env
+import os
+!pip install selenium
+!apt-get update 
+!apt install chromium-chromedriver
+
+from selenium import webdriver
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+wd = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+driver =webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+driver.get("https://hellomotions.com/")
+!pip install nest_asyncio
+import nest_asyncio
+nest_asyncio.apply()
+from discord.ext.commands import Bot
+from discord.ext import commands
+import asyncio
+
+client = discord.Client()
+client = commands.Bot(command_prefix = '!')
+
+#client.start("")
+
+
+@client.event
+async def on_ready():
+  print("We have logged in as {0.user}".format(client))
+
+@client.event
+async def on_message(message):
+  if message.author == client.user :
+    return
+  if message.content.startswith('#motion') :
+    #motion == message.content[7:]
+    #await message.channel.send("hshauhs")
+    #identify element
+    search = driver.find_element_by_name("q")
+#enter text with sendKeys() then apply submit()
+    state = message.content[7:]
+    search.send_keys("" +state+ "");
+    search.send_keys(Keys.RETURN);
+
+#explicitly wait for the program to load page until we get that element
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from time import sleep
+    sleep(5)
+
+    num_rows = len (driver.find_elements_by_xpath("/html/body/div/div/table/tbody/tr"))
+    if num_rows < 1:
+   
+         await message.channel.send("No searches found")
+    else:
+        num_colmns = len (driver.find_elements_by_xpath("/html/body/div/div/table/tbody/tr[2]/td"))
+        from random import seed
+        from random import randint
+        seed(1)
+
+        selected = str(randint(2,num_rows))
+#if selected > 1:
+        motion = driver.find_element_by_xpath("/html/body/div/div/table/tbody/tr[" +selected+ "]/td[" +repr(num_colmns)+ "]")
+        await message.channel.send("The motion is " +motion.text+ "")
+#else:
+  #print("Invalid row number")
+loop = asyncio.get_event_loop()
+#loop.run_forever(client.start('ODcwMjc5OTc5NjIyMDg4NzE0.YQKdZA.65bwFk6tgJFiWLBg5WJ5Fgc21UM#'))
+#try:
+    #loop.run_forever()
+#finally:
+    #loop.run_until_complete(loop.shutdown_asyncgens())
+    #loop.close()
+
+loop.run_until_complete(client.start('ODcwMjc5OTc5NjIyMDg4NzE0.YQKdZA.6MZIrw6JVgCYkDAMIfmB-aRhtCo'))
+#asyncio.run(client.start('ODcwMjc5OTc5NjIyMDg4NzE0.YQKdZA.65bwFk6tgJFiWLBg5WJ5Fgc21UM#'))
+
+#body > div > div > table > tbody > tr:nth-child(2) > td:nth-child(1)
+#print("Columns in table are " + repr(num_colmns))
